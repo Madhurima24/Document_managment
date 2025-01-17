@@ -100,6 +100,12 @@ class _FolderScreenWidget extends State<FolderScreenWidget> {
     });
   }
 
+  void _renameFolder(String newName, FileItemNew? item) {
+    setState(() {
+      item!.name = newName;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -171,11 +177,13 @@ class _FolderScreenWidget extends State<FolderScreenWidget> {
                     items: currentItems,
                     onStarred: _addToStarred,
                     colorScheme: widget.colorScheme,
+                    renameFolder: _renameFolder,
                   )
                 : CustomListView(
                     items: currentItems,
                     onStarred: _addToStarred,
                     colorScheme: widget.colorScheme,
+                    renameFolder: _renameFolder,
                   ),
           ),
           // GridLayout(items: currentItems, onStarred: _addToStarred, isGridView: widget.isGridView, toggleViewMode: widget.toggleViewMode),

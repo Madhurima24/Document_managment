@@ -1,18 +1,20 @@
+import 'package:document_management_main/data/create_fileStructure.dart';
 import 'package:flutter/material.dart';
 
 class FolderDialog extends StatelessWidget {
-  final Function(String folderName) onFolderCreated;
-  final String? folderName;
+  final Function(String folderName)? onFolderCreated;
+  final FileItemNew? folderData;
+  final Function(String, FileItemNew)? renameFolder;
 
   const FolderDialog(
-      {super.key, required this.onFolderCreated, this.folderName});
+      {super.key, this.onFolderCreated, this.folderData, this.renameFolder});
 
   @override
   Widget build(BuildContext context) {
     final isLightTheme = Theme.of(context).brightness == Brightness.light;
 
-    TextEditingController folderNameController =
-        TextEditingController(text: folderName);
+    TextEditingController folderNameController =folderData != null ? 
+        TextEditingController(text: folderData!.name) : TextEditingController();
 
     return AlertDialog(
       title: Text(
@@ -34,9 +36,9 @@ class FolderDialog extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         TextButton(
-          child: folderName != null ? const Text("Rename") : const Text('Create'),
+          child: folderData != null ? const Text("Rename") : const Text('Create'),
           onPressed: () {
-            onFolderCreated(folderNameController.text);
+            folderData != null ? renameFolder!(folderNameController.text, folderData!) : onFolderCreated!(folderNameController.text);
             Navigator.of(context).pop();
           },
         ),

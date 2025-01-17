@@ -1,3 +1,5 @@
+import 'package:document_management_main/apis/ikon_service.dart';
+import 'package:document_management_main/data/create_trash_data.dart';
 import 'package:document_management_main/sidebar_component/myDrive.dart';
 import 'package:document_management_main/sidebar_component/trash.dart';
 import 'package:flutter/material.dart';
@@ -17,21 +19,30 @@ class MenuWithSubMenu extends StatefulWidget {
   //final Function(Widget) onMenuItemSelected; // Callback function
   //const MenuWithSubMenu(this.onMenuItemSelected, {super.key});
   const MenuWithSubMenu(
-      {
-        super.key,
-        required this.colorScheme,
-        required this.themeMode,
-        required this.menuItems,
-        required this.updateTheme,
-        required this.updateColorScheme
-      }
-  );
+      {super.key,
+      required this.colorScheme,
+      required this.themeMode,
+      required this.menuItems,
+      required this.updateTheme,
+      required this.updateColorScheme});
 
   @override
   State<MenuWithSubMenu> createState() => _MenuWithSubMenuState();
 }
 
 class _MenuWithSubMenuState extends State<MenuWithSubMenu> {
+  List<Map<String, dynamic>>? trashData;
+  void getTrashData() async {
+    trashData = await IKonService.iKonService.getMyInstancesV2(
+      processName: "Delete Folder Structure - DM",
+      predefinedFilters: {"taskName": "Delete Folder And Files"},
+      processVariableFilters: null,
+      taskVariableFilters: null,
+      mongoWhereClause: null,
+      projections: ["Data"],
+      allInstance: false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +74,31 @@ class _MenuWithSubMenuState extends State<MenuWithSubMenu> {
             } else {
               return Card(
                 child: ListTile(
-                  title: Text(menuItem.title),
-                  leading: Icon(menuItem.icon),
-                    onTap: () {
+                    title: Text(menuItem.title),
+                    leading: Icon(menuItem.icon),
+                    onTap: () async {
+                      if (menuItem.title == "Trash") {
+                        // getTrashData();
+                        List<Map<String, dynamic>> trashData =
+                            await IKonService.iKonService.getMyInstancesV2(
+                            processName: "Delete Folder Structure - DM",
+                            predefinedFilters: {
+                              "taskName": "Delete Folder And Files"
+                            },
+                            processVariableFilters: null,
+                            taskVariableFilters: null,
+                            mongoWhereClause: null,
+                            projections: ["Data"],
+                            allInstance: false,
+                        );
+                        createFileStructureForTrash(trashData);
+                      }
+
                       String convertToCamelCase(String input) {
                         List<String> words = input.split(' ');
                         for (int i = 1; i < words.length; i++) {
-                          words[i] = words[i][0].toUpperCase() + words[i].substring(1).toLowerCase();
+                          words[i] = words[i][0].toUpperCase() +
+                              words[i].substring(1).toLowerCase();
                         }
                         return words.join('');
                       }
@@ -79,59 +108,64 @@ class _MenuWithSubMenuState extends State<MenuWithSubMenu> {
 
                       // Map of widget names to widget constructors
                       Map<String, Widget Function()> widgetMap = {
-                        'MyDrive': () =>  MyDrive(
-                          onThemeChanged: widget.updateTheme,
-                          onColorSchemeChanged: widget.updateColorScheme,
-                          colorScheme: widget.colorScheme,
-                          themeMode: widget.themeMode,
-                        ),
-                        'Trash': () =>  Trash(
-                          onThemeChanged: widget.updateTheme,
-                          onColorSchemeChanged: widget.updateColorScheme,
-                          colorScheme: widget.colorScheme,
-                          themeMode: widget.themeMode,
-                        ),
-                        'Account': () =>  Account(
-                          onThemeChanged: widget.updateTheme,
-                          onColorSchemeChanged: widget.updateColorScheme,
-                          colorScheme: widget.colorScheme,
-                          themeMode: widget.themeMode,
-                        ),
-                        'Profile': () =>  Profile(
-                          onThemeChanged: widget.updateTheme,
-                          onColorSchemeChanged: widget.updateColorScheme,
-                          colorScheme: widget.colorScheme,
-                          themeMode: widget.themeMode,),
+                        'MyDrive': () => MyDrive(
+                              onThemeChanged: widget.updateTheme,
+                              onColorSchemeChanged: widget.updateColorScheme,
+                              colorScheme: widget.colorScheme,
+                              themeMode: widget.themeMode,
+                            ),
+                        'Trash': () => Trash(
+                              onThemeChanged: widget.updateTheme,
+                              onColorSchemeChanged: widget.updateColorScheme,
+                              colorScheme: widget.colorScheme,
+                              themeMode: widget.themeMode,
+                            ),
+                        'Account': () => Account(
+                              onThemeChanged: widget.updateTheme,
+                              onColorSchemeChanged: widget.updateColorScheme,
+                              colorScheme: widget.colorScheme,
+                              themeMode: widget.themeMode,
+                            ),
+                        'Profile': () => Profile(
+                              onThemeChanged: widget.updateTheme,
+                              onColorSchemeChanged: widget.updateColorScheme,
+                              colorScheme: widget.colorScheme,
+                              themeMode: widget.themeMode,
+                            ),
                         'Appearance': () => AppearanceWidget(
-                          onThemeChanged: widget.updateTheme,
-                          onColorSchemeChanged: widget.updateColorScheme,
-                          colorScheme: widget.colorScheme,
-                          themeMode: widget.themeMode,
-                        ),
+                              onThemeChanged: widget.updateTheme,
+                              onColorSchemeChanged: widget.updateColorScheme,
+                              colorScheme: widget.colorScheme,
+                              themeMode: widget.themeMode,
+                            ),
                       };
 
                       if (widgetMap.containsKey(widgetName)) {
-                        Navigator.of(context).push(
-                            PageRouteBuilder(
-                              pageBuilder: (context, animation, secondaryAnimation) => widgetMap[widgetName]!(),
-                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                const begin = Offset(1.0, 0.0); // Start from the right
-                                const end = Offset.zero; // End at the original position
-                                const curve = Curves.easeInOut;
+                        Navigator.of(context).push(PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  widgetMap[widgetName]!(),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin =
+                                Offset(1.0, 0.0); // Start from the right
+                            const end =
+                                Offset.zero; // End at the original position
+                            const curve = Curves.easeInOut;
 
-                                var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                                var offsetAnimation = animation.drive(tween);
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+                            var offsetAnimation = animation.drive(tween);
 
-                                return SlideTransition(position: offsetAnimation, child: child);
-                              },
-                            )
-                        );
+                            return SlideTransition(
+                                position: offsetAnimation, child: child);
+                          },
+                        ));
                       } else {
                         // Handle case where widget is not found
                         print('Widget not found: $widgetName');
                       }
-                    }
-                ),
+                    }),
               );
             }
           }).toList(),

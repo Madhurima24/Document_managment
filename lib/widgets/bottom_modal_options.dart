@@ -7,7 +7,8 @@ import 'folder_dialog.dart';
 class BottomModalOptions extends StatelessWidget {
   final FileItemNew itemData;
   final Function(FileItemNew)? onStarred;
-  const BottomModalOptions(this.itemData, {this.onStarred, super.key});
+  final Function(String, FileItemNew item) renameFolder;
+  const BottomModalOptions(this.itemData, {this.onStarred, super.key, required this.renameFolder});
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +62,10 @@ class BottomModalOptions extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (_) => FolderDialog(
-                        onFolderCreated: _renameFolder,
-                        folderName: itemData.name,
+                        // onFolderCreated: renameFolder,
+                        folderData: itemData,
+                        renameFolder: renameFolder,
+                        
                       ),
                     );
                     Navigator.pop(context); // Close the modal

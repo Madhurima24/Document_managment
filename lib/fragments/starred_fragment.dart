@@ -40,6 +40,12 @@ class _StarredFragmentState extends State<StarredFragment> {
     });
   }
 
+    void _renameFolder(String newName, FileItemNew? item){
+    setState(() {
+      item!.name = newName;
+    });
+  }
+
   List<FileItemNew> getStarredFiles(List<FileItemNew> items) {
     List<FileItemNew> starredFiles = [];
 
@@ -80,11 +86,13 @@ class _StarredFragmentState extends State<StarredFragment> {
               items: newStarredItems,
               onStarred: _addToStarred,
               colorScheme: widget.colorScheme,
+              renameFolder: _renameFolder,
             )
           : CustomListView(
               items: newStarredItems,
               onStarred: _addToStarred,
               colorScheme: widget.colorScheme,
+              renameFolder: _renameFolder,
             ),
       // body: Card(
       //   shadowColor: Colors.transparent,

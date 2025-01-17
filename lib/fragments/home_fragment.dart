@@ -60,6 +60,12 @@ class _HomeFragmentState extends State<HomeFragment> {
     });
   }
 
+  void _renameFolder(String newName, FileItemNew? item){
+    setState(() {
+      item!.name = newName;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -80,9 +86,9 @@ class _HomeFragmentState extends State<HomeFragment> {
         ),
         body: widget.isGridView
                 ? GridLayout(
-                    items: currentItems, onStarred: _addToStarred, colorScheme: widget.colorScheme,)
+                    items: currentItems, onStarred: _addToStarred, colorScheme: widget.colorScheme, renameFolder: _renameFolder,)
                 : CustomListView(
-                    items: currentItems, onStarred: _addToStarred, colorScheme: widget.colorScheme,),
+                    items: currentItems, onStarred: _addToStarred, colorScheme: widget.colorScheme, renameFolder: _renameFolder,),
           ),
         // body: Card(
         //   shadowColor: Colors.transparent,

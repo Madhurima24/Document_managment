@@ -28,7 +28,6 @@ class _TrashState extends State<Trash>{
   //   });
   // }
 
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
